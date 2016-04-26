@@ -13,11 +13,11 @@ namespace BatchDownloader
     {
         static void Main(string[] args)
         {
-            
-            var url = "ftp://plexcloud.westus.cloudapp.azure.com:2500";
-            var user = "marivera";
-            var pass = "riverama";
-            var drive = "I:\\";
+
+            var url = args[0];
+            var user = args[1];
+            var pass = args[2];
+            var drive = args[3];
 
             var itemQ = new Queue<DirectoryItem>();
             itemQ.Enqueue(new DirectoryItem(null) { Name = "/TV Shows/" });
