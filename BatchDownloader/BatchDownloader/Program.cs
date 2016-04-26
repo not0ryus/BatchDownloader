@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BatchDownloader
@@ -47,6 +48,7 @@ namespace BatchDownloader
                             var toDownload = url + fileItem.ToFullPathString();
                             Console.WriteLine("start downloading {0}: " + toDownload);
                             DownloadFile(CreateRequest(toDownload, user, pass), str);
+                            str.Flush();
                             str.Dispose();
                             Console.WriteLine("done downloading {0}: " + toDownload);
                         }
@@ -66,17 +68,31 @@ namespace BatchDownloader
         {
             req.UseBinary = true;
             req.Method = WebRequestMethods.Ftp.DownloadFile;
+            req.Timeout = Timeout.Infinite;
+            req.ReadWriteTimeout = Timeout.Infinite;
+            var counter = 10;
             using (var resp = req.GetResponse())
             {
                 byte[] buffer = new byte[1000000];
                 while (true)
                 {
-                    var read = resp.GetResponseStream().Read(buffer, 0, buffer.Length);
-                    output.Write(buffer, 0, read);
-                    if (read <= 0)
+                    try {
+                        var read = resp.GetResponseStream().Read(buffer, 0, buffer.Length);
+                        output.Write(buffer, 0, read);
+                        if (read <= 0)
+                        {
+                            output.Flush();
+                            break;
+                        }
+                    }catch(Exception e)
                     {
-                        output.Flush();
-                        break;
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(e.Message);
+                        Console.ResetColor();
+                        if(++counter == 10)
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -108,6 +124,7 @@ namespace BatchDownloader
             request.Credentials = new NetworkCredential(user, pass);
             request.Proxy = null;
             request.EnableSsl = false;
+            request.UsePassive = true;
             return request;
         }
     }
