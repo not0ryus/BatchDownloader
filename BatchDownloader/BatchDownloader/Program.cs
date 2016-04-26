@@ -43,12 +43,14 @@ namespace BatchDownloader
                             {
                                 Directory.CreateDirectory(localPath);
                             }
-                            var str = File.OpenWrite(localPath);
+                            var str = File.OpenWrite(localPath + fileItem.Name);
                             var toDownload = url + fileItem.ToFullPathString();
-                            Console.WriteLine("downloading {0}: " + toDownload);
+                            Console.WriteLine("start downloading {0}: " + toDownload);
                             DownloadFile(CreateRequest(toDownload, user, pass), str);
                             str.Dispose();
-                        }catch(Exception e)
+                            Console.WriteLine("done downloading {0}: " + toDownload);
+                        }
+                        catch(Exception e)
                         {
                             Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine(e.Message);
