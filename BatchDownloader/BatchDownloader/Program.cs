@@ -36,15 +36,24 @@ namespace BatchDownloader
                     }
                     else
                     {
-                        var fileItem = new FileItem(item) { Name = i.Key };
-                        var localPath = drive + fileItem.Parent.ToFullPathString();
-                        if (!Directory.Exists(localPath))
+                        try {
+                            var fileItem = new FileItem(item) { Name = i.Key };
+                            var localPath = drive + fileItem.Parent.ToFullPathString();
+                            if (!Directory.Exists(localPath))
+                            {
+                                Directory.CreateDirectory(localPath);
+                            }
+                            var str = File.OpenWrite(localPath);
+                            var toDownload = url + fileItem.ToFullPathString();
+                            Console.WriteLine("downloading {0}: " + toDownload);
+                            DownloadFile(CreateRequest(toDownload, user, pass), str);
+                            str.Dispose();
+                        }catch(Exception e)
                         {
-                            Directory.CreateDirectory(localPath);
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine(e.Message);
                         }
-                        var str = File.OpenWrite(localPath);
-                        DownloadFile(CreateRequest(url + fileItem.ToFullPathString(), user, pass), str);
-                        str.Dispose();
+                        Console.ResetColor();
                     }
                 }
             } 
