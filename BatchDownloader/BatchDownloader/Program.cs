@@ -73,7 +73,7 @@ namespace BatchDownloader
             var counter = 10;
             using (var resp = req.GetResponse())
             {
-                byte[] buffer = new byte[1000000];
+                byte[] buffer = new byte[8000];
                 while (true)
                 {
                     try {
@@ -81,7 +81,6 @@ namespace BatchDownloader
                         output.Write(buffer, 0, read);
                         if (read <= 0)
                         {
-                            output.Flush();
                             break;
                         }
                     }catch(Exception e)
