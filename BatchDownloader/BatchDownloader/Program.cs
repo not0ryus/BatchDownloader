@@ -43,7 +43,7 @@ namespace BatchDownloader
                             {
                                 Directory.CreateDirectory(localPath);
                             }
-                            var str = File.OpenWrite(localPath + fileItem.Name);
+                            var str = File.OpenWrite(localPath + "\\" + fileItem.Name);
                             var toDownload = url + fileItem.ToFullPathString();
                             Console.WriteLine("start downloading {0}: " + toDownload);
                             DownloadFile(CreateRequest(toDownload, user, pass), str);
